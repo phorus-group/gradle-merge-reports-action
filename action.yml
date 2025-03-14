@@ -22,10 +22,14 @@ inputs:
     description: "Location of Jacoco CSV report"
     required: false
     default: "./build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.csv"
-  cobertura-report-location:
-    description: "Location of the final cobertura report"
+  test-artifact-1:
+    description: "First test artifact to download"
     required: false
-    default: "build/reports/cobertura/coberturaMerge.xml"
+    default: "gradle-tests-unit"
+  test-artifact-2:
+    description: "Second test artifact to download"
+    required: false
+    default: "gradle-tests-integration"
 outputs:
   total-lines:
     description: "Total lines to cover with tests"
@@ -45,10 +49,22 @@ runs:
       with:
         name: gradle-build
 
-    - name: Download test artifacts
+    - name: Download first test artifacts
       uses: actions/download-artifact@v4
       with:
-        name: gradle-tests
+        name: ${{ inputs.test-artifact-1 }}
+        path: build/artifact-1
+
+    - name: Download second test artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.test-artifact-2 }}
+        path: build/artifact-2
+
+    - name: Move files to build directory
+      run: |
+        mv build/artifact-1/* build/
+        mv build/artifact-2/* build/
 
     - name: "Setup Java"
       uses: actions/setup-java@v4
