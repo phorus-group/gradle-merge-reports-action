@@ -22,6 +22,10 @@ inputs:
     description: "Location of Jacoco CSV report"
     required: false
     default: "./build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.csv"
+  cobertura-report-location:
+    description: "Location of the final cobertura report"
+    required: false
+    default: "build/reports/cobertura/coberturaMerge.xml"
 outputs:
   total-lines:
     description: "Total lines to cover with tests"
@@ -76,7 +80,7 @@ runs:
           echo -e "\e[33mJacoco CSV coverage report not found!\e[0m"
         fi
 
-    - name: "Report test summary"
-      uses: test-summary/action@v2
+    - name: Code Coverage Summary Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        paths: "build/test-results/test/*.xml"
+        filename: ${{ inputs.cobertura-report-location }}
