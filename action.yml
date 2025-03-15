@@ -61,6 +61,11 @@ runs:
         name: ${{ inputs.test-artifact-2 }}
         path: build/jacoco
 
+    - name: "Check build/jacoco"
+      shell: bash
+      run: |
+        ls -la build/jacoco
+
     - name: "Setup Java"
       uses: actions/setup-java@v4
       with:
