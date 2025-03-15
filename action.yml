@@ -21,7 +21,7 @@ inputs:
   jacoco-csv-location:
     description: "Location of Jacoco CSV report"
     required: false
-    default: "./build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.csv"
+    default: "./build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.xml"
   test-artifact-1:
     description: "First test artifact to download"
     required: false
