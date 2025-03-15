@@ -64,8 +64,8 @@ runs:
     - name: Move files to build directory
       shell: bash
       run: |
-        mv build/artifact-1/* build/
-        mv build/artifact-2/* build/
+        mv -f build/artifact-1/* build/
+        mv -f build/artifact-2/* build/
 
     - name: "Setup Java"
       uses: actions/setup-java@v4
