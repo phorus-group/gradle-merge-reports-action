@@ -18,10 +18,14 @@ inputs:
     description: "The gradle commands to run"
     required: false
     default: "jacocoMergeReports"
-  jacoco-csv-location:
+  cobertura-location:
     description: "Location of Jacoco CSV report"
     required: false
     default: "./build/reports/cobertura/coberturaMerge.xml"
+  csv-location:
+    description: "Location of Jacoco CSV report"
+    required: false
+    default: "./build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.csv"
   test-artifact-1:
     description: "First test artifact to download"
     required: false
@@ -87,11 +91,11 @@ runs:
       id: report-coverage
       shell: bash
       run: |
-        if [ -f ${{ inputs.jacoco-csv-location }} ]; then
-          awk -F "," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' ${{ inputs.jacoco-csv-location }}
-          echo "total-lines=$(awk -F "," '{ instructions += $4 + $5 } END { print instructions }' ${{ inputs.jacoco-csv-location }})" >> "$GITHUB_OUTPUT"
-          echo "lines-covered=$(awk -F "," '{ covered += $5 } END { print covered }' ${{ inputs.jacoco-csv-location }})" >> "$GITHUB_OUTPUT"
-          echo "coverage-percentage=$(awk -F "," '{ instructions += $4 + $5; covered += $5 } END { print 100*covered/instructions }' ${{ inputs.jacoco-csv-location }})" >> "$GITHUB_OUTPUT"
+        if [ -f ${{ inputs.csv-location }} ]; then
+          awk -F "," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' ${{ inputs.csv-location }}
+          echo "total-lines=$(awk -F "," '{ instructions += $4 + $5 } END { print instructions }' ${{ inputs.csv-location }})" >> "$GITHUB_OUTPUT"
+          echo "lines-covered=$(awk -F "," '{ covered += $5 } END { print covered }' ${{ inputs.csv-location }})" >> "$GITHUB_OUTPUT"
+          echo "coverage-percentage=$(awk -F "," '{ instructions += $4 + $5; covered += $5 } END { print 100*covered/instructions }' ${{ inputs.csv-location }})" >> "$GITHUB_OUTPUT"
         else
           echo -e "\e[33mJacoco CSV coverage report not found!\e[0m"
         fi
@@ -99,4 +103,4 @@ runs:
     - name: Code Coverage Summary Report
       uses: irongut/CodeCoverageSummary@v1.3.0
       with:
-        filename: ${{ inputs.cobertura-report-location }}
+        filename: ${{ inputs.cobertura-location }}
