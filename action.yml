@@ -93,5 +93,5 @@ runs:
         coverage_report_name: Coverage Summary
         coverage_report_title: JaCoCo Combined Coverage Report
         github_token: ${{ github.token }}
-        skip_check_run: true
+        skip_check_run: false
         publish_only_summary: false
