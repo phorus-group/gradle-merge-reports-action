@@ -14,10 +14,10 @@ inputs:
     description: "The gradle commands to run"
     required: false
     default: "jacocoMergeReports"
-  cobertura-location:
-    description: "Location of Jacoco CSV report"
+  xml-location:
+    description: "Location of Jacoco XML report"
     required: false
-    default: "./build/reports/cobertura/coberturaMerge.xml"
+    default: "./build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.xml"
   csv-location:
     description: "Location of Jacoco CSV report"
     required: false
@@ -91,7 +91,12 @@ runs:
           echo -e "\e[33mJacoco CSV coverage report not found!\e[0m"
         fi
 
-    - name: Code Coverage Summary Report
-      uses: irongut/CodeCoverageSummary@v1.3.0
+    - name: "JaCoCo Coverage Summary Report"
+      uses: PavanMudigonda/jacoco-reporter@v5.0
       with:
-        filename: ${{ inputs.cobertura-location }}
+        coverage_results_path: build/reports/jacoco/jacocoMergeReports/jacocoMergeReports.xml
+        coverage_report_name: Coverage Summary
+        coverage_report_title: JaCoCo Combined Coverage Report
+        github_token: ${{ github.token }}
+        skip_check_run: true
+        publish_only_summary: true
