@@ -33,13 +33,13 @@ inputs:
 outputs:
   total-lines:
     description: "Total lines to cover with tests"
-    value: ${{ steps.build-and-test.outputs.total-lines }}
+    value: ${{ steps.jacoco-reporter.outputs.total_lines }}
   lines-covered:
     description: "Total lines to covered with tests"
-    value: ${{ steps.build-and-test.outputs.lines-covered }}
+    value: ${{ steps.jacoco-reporter.outputs.covered_lines }}
   coverage-percentage:
     description: "The coverage percentage"
-    value: ${{ steps.build-and-test.outputs.coverage-percentage }}
+    value: ${{ steps.jacoco-reporter.outputs.coverage_percentage }}
 
 runs:
   using: composite
@@ -87,7 +87,7 @@ runs:
         fi
 
     - name: "JaCoCo Coverage Summary Report"
-      id: jacoco_reporter
+      id: jacoco-reporter
       uses: PavanMudigonda/jacoco-reporter@v5.0
       with:
         coverage_results_path: ${{ inputs.xml-location }}
@@ -101,7 +101,7 @@ runs:
       run: |
         echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
         echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
-        echo "| Code Coverage % | ${{ steps.jacoco_reporter.outputs.coverage_percentage }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.jacoco_reporter.outputs.covered_lines }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| :x: Number of Lines Missed | ${{ steps.jacoco_reporter.outputs.missed_lines }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| Total Number of Lines | ${{ steps.jacoco_reporter.outputs.total_lines }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Code Coverage % | ${{ steps.jacoco-reporter.outputs.coverage_percentage }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.jacoco-reporter.outputs.covered_lines }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| :x: Number of Lines Missed | ${{ steps.jacoco-reporter.outputs.missed_lines }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Total Number of Lines | ${{ steps.jacoco-reporter.outputs.total_lines }} |" >> $GITHUB_STEP_SUMMARY
