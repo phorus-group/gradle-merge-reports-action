@@ -97,7 +97,7 @@ runs:
         skip_check_run: false
         publish_only_summary: false
 
-    - name: Add Jacocoo report to workflow run summary
+    - name: "Add Jacocoo report to workflow run summary"
       run: |
         echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
         echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
