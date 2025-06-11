@@ -53,18 +53,13 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.test-artifact-1 }}
-        path: build/jacoco
+        path: .
 
     - name: Download second test artifacts
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.test-artifact-2 }}
-        path: build/jacoco
-
-    - name: "Check build/jacoco"
-      shell: bash
-      run: |
-        ls -la build/jacoco
+        path: .
 
     - name: "Setup Java"
       uses: actions/setup-java@v4
