@@ -91,7 +91,7 @@ runs:
       run: |
         echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
         echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
-        echo "| Code Coverage % | ${{ steps.jacoco-reporter.outputs.coverage_percentage }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.jacoco-reporter.outputs.covered_lines }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| :x: Number of Lines Missed | ${{ steps.jacoco-reporter.outputs.missed_lines }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| Total Number of Lines | ${{ steps.jacoco-reporter.outputs.total_lines }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| Code Coverage % | ${{ steps.coverage-summary.outputs.coverage-percentage }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.coverage-summary.outputs.lines-covered }} |" >> $GITHUB_STEP_SUMMARY
+        echo "| :x: Number of Lines Missed | $((${{ steps.coverage-summary.outputs.total-lines }} - ${{ steps.coverage-summary.outputs.lines-covered }})) |" >> $GITHUB_STEP_SUMMARY
+        echo "| Total Number of Lines | ${{ steps.coverage-summary.outputs.total-lines }} |" >> $GITHUB_STEP_SUMMARY
