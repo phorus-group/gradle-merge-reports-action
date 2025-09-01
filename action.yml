@@ -89,8 +89,10 @@ runs:
     - name: "JaCoCo Coverage Summary Report"
       id: jacoco-reporter
       uses: PavanMudigonda/jacoco-reporter@v5.0
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }}
       with:
-        coverage_results_path: ${{ inputs.xml-location }}
+        coverage_results_path: ${{ github.workspace }}/${{ inputs.xml-location }}
         coverage_report_name: Coverage Summary
         coverage_report_title: JaCoCo Combined Coverage Report
         github_token: ${{ github.token }}
