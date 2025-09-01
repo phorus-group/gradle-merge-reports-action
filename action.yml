@@ -86,6 +86,19 @@ runs:
           echo -e "\e[33mJacoco CSV coverage report not found!\e[0m"
         fi
 
+    - name: "Debug - Check if XML report exists"
+      shell: bash
+      run: |
+        echo "Looking for XML report at: ${{ github.workspace }}/${{ inputs.xml-location }}"
+        if [ -f "${{ github.workspace }}/${{ inputs.xml-location }}" ]; then
+          echo "✅ XML report found"
+          ls -la "${{ github.workspace }}/${{ inputs.xml-location }}"
+        else
+          echo "❌ XML report not found"
+          echo "Contents of reports directory:"
+          find ./build/reports -name "*.xml" -type f 2>/dev/null || echo "No XML files found in build/reports"
+        fi
+
     - name: "JaCoCo Coverage Summary Report"
       id: jacoco-reporter
       uses: PavanMudigonda/jacoco-reporter@v5.0
