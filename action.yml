@@ -30,16 +30,24 @@ inputs:
     description: "Second test artifact to download"
     required: false
     default: "gradle-tests-integration"
+  enable-codecov:
+    description: "Set to true to upload coverage to Codecov"
+    required: false
+    default: "false"
+  codecov-token:
+    description: "Codecov token for private repos. Public repos can leave this empty."
+    required: false
+    default: ""
 outputs:
   total-lines:
     description: "Total lines to cover with tests"
-    value: ${{ steps.jacoco-reporter.outputs.total_lines }}
+    value: ${{ steps.report-coverage.outputs.total-lines }}
   lines-covered:
-    description: "Total lines to covered with tests"
-    value: ${{ steps.jacoco-reporter.outputs.covered_lines }}
+    description: "Total lines covered with tests"
+    value: ${{ steps.report-coverage.outputs.lines-covered }}
   coverage-percentage:
     description: "The coverage percentage"
-    value: ${{ steps.jacoco-reporter.outputs.coverage_percentage }}
+    value: ${{ steps.report-coverage.outputs.coverage-percentage }}
 
 runs:
   using: composite
@@ -75,23 +83,39 @@ runs:
 
     - name: "Report coverage"
       id: report-coverage
+      if: ${{ !cancelled() }}
       shell: bash
       run: |
         if [ -f ${{ inputs.csv-location }} ]; then
-          awk -F "," '{ instructions += $4 + $5; covered += $5 } END { print covered, "/", instructions, " instructions covered"; print 100*covered/instructions, "% covered" }' ${{ inputs.csv-location }}
-          echo "total-lines=$(awk -F "," '{ instructions += $4 + $5 } END { print instructions }' ${{ inputs.csv-location }})" >> "$GITHUB_OUTPUT"
-          echo "lines-covered=$(awk -F "," '{ covered += $5 } END { print covered }' ${{ inputs.csv-location }})" >> "$GITHUB_OUTPUT"
-          echo "coverage-percentage=$(awk -F "," '{ instructions += $4 + $5; covered += $5 } END { print 100*covered/instructions }' ${{ inputs.csv-location }})" >> "$GITHUB_OUTPUT"
+          TOTAL=$(awk -F "," '{ instructions += $4 + $5 } END { print instructions }' ${{ inputs.csv-location }})
+          COVERED=$(awk -F "," '{ covered += $5 } END { print covered }' ${{ inputs.csv-location }})
+          PERCENTAGE=$(awk -F "," '{ instructions += $4 + $5; covered += $5 } END { printf "%.2f", 100*covered/instructions }' ${{ inputs.csv-location }})
+
+          echo "$COVERED / $TOTAL instructions covered"
+          echo "$PERCENTAGE% covered"
+
+          echo "total-lines=$TOTAL" >> "$GITHUB_OUTPUT"
+          echo "lines-covered=$COVERED" >> "$GITHUB_OUTPUT"
+          echo "coverage-percentage=$PERCENTAGE" >> "$GITHUB_OUTPUT"
+
+          MISSED=$((TOTAL - COVERED))
+          echo "## Merged Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Coverage | ${PERCENTAGE}% |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lines Covered | $COVERED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lines Missed | $MISSED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Total Lines | $TOTAL |" >> $GITHUB_STEP_SUMMARY
         else
           echo -e "\e[33mJacoco CSV coverage report not found!\e[0m"
+          echo "## Merged Coverage" >> $GITHUB_STEP_SUMMARY
+          echo "Coverage report not available." >> $GITHUB_STEP_SUMMARY
         fi
 
-    - name: "Add Jacocoo report to workflow run summary"
-      shell: bash
-      run: |
-        echo "| Outcome | Value |" >> $GITHUB_STEP_SUMMARY
-        echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
-        echo "| Code Coverage % | ${{ steps.coverage-summary.outputs.coverage-percentage }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| :heavy_check_mark: Number of Lines Covered | ${{ steps.coverage-summary.outputs.lines-covered }} |" >> $GITHUB_STEP_SUMMARY
-        echo "| :x: Number of Lines Missed | $((${{ steps.coverage-summary.outputs.total-lines }} - ${{ steps.coverage-summary.outputs.lines-covered }})) |" >> $GITHUB_STEP_SUMMARY
-        echo "| Total Number of Lines | ${{ steps.coverage-summary.outputs.total-lines }} |" >> $GITHUB_STEP_SUMMARY
+    - name: "Upload coverage to Codecov"
+      if: ${{ !cancelled() && inputs.enable-codecov == 'true' }}
+      uses: codecov/codecov-action@v5
+      with:
+        files: ${{ inputs.xml-location }}
+        token: ${{ inputs.codecov-token }}
+        fail_ci_if_error: false
