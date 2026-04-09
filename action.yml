@@ -114,4 +114,5 @@ runs:
       with:
         files: ${{ inputs.xml-location }}
         token: ${{ inputs.codecov-token }}
+        disable_search: true
         fail_ci_if_error: false
